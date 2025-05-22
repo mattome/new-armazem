@@ -61,9 +61,9 @@ header p {
     font-size: 0.7em;
     padding: 4px 8px;
     border-radius: 50%;
-    position: relative;
+    /*position: relative;
     top: -5px;
-    right: -10px;
+    right: -10px;*/
     font-weight: bold;
 }
 
