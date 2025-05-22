@@ -88,8 +88,8 @@
                     <li><i class="fas fa-envelope"></i> Email: contato@armazemdositio.com.br</li>
                     <li><i class="fab fa-instagram"></i> Instagram: <a href="https://instagram.com/armazemdositio"
                             target="_blank">@armazemdositio</a></li>
-                    <li><i class="fab fa-whatsapp"></i> WhatsApp: <a href="https://wa.me/XXXXXXXXXXX"
-                            target="_blank">(XX) XXXXX-XXXX</a></li>
+                    <li><i class="fab fa-whatsapp"></i> WhatsApp: <a href="https://wa.me/5511955305280"
+                            target="_blank">(11) 95530-5280</a></li>
                 </ul>
             </div>
         </section>
@@ -283,7 +283,7 @@
             message += `\nTotal: R$ ${cartTotalSpan.textContent}`;
             message += `\n\nPor favor, confirme a disponibilidade e o valor total.`;
 
-            const whatsappUrl = `https://wa.me/SEUNUMERODEWHATSAPP?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/5511955305280?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
 
             // Opcional: Limpar o carrinho após a finalização
@@ -364,10 +364,13 @@
             });
         });
 
+        // 8. Event Listeners (parte relevante)
+
         // Atualiza o link do WhatsApp flutuante com o pedido atual
         whatsappFloat.addEventListener('click', (e) => {
+            e.preventDefault(); // <-- MOVA ESTA LINHA PARA AQUI
+
             if (cart.length > 0) {
-                e.preventDefault(); // Impede a ação padrão do link
                 checkout(); // Chama a função de checkout para gerar a mensagem e abrir o WhatsApp
             } else {
                 showMessage('Adicione itens ao carrinho para fazer um pedido!', 'warning');
