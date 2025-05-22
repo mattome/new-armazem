@@ -1,19 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8" />
     <title>Administração - Armazém do Sítio</title>
     <style>
-        
-        body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
-        label { display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 6px; margin-top: 4px; }
-        button { margin-top: 10px; padding: 8px 12px; }
-        .product-list { margin-top: 30px; }
-        .product-item { border-bottom: 1px solid #ccc; padding: 10px 0; }
-        .edit-btn { margin-left: 10px; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px 12px;
+        }
+
+        .product-list {
+            margin-top: 30px;
+        }
+
+        .product-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .edit-btn {
+            margin-left: 10px;
+        }
     </style>
 </head>
+
 <body>
     <h1>Administração - Produtos</h1>
 
@@ -47,23 +76,27 @@
     <div class="product-list" id="product-list"></div>
 
     <script>
-        let products = [];
+    let products = [];
+    // Tenta carregar os produtos do localStorage ao iniciar
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+        products = JSON.parse(storedProducts); // Converte de string JSON para array JavaScript
+    }
 
-        const form = document.getElementById('product-form');
-        const nameInput = document.getElementById('product-name');
-        const priceInput = document.getElementById('product-price');
-        const imageInput = document.getElementById('product-image');
-        const categorySelect = document.getElementById('product-category');
-        const productList = document.getElementById('product-list');
-        const productIndexInput = document.getElementById('product-index');
+    const form = document.getElementById('product-form');
+    const nameInput = document.getElementById('product-name');
+    const priceInput = document.getElementById('product-price');
+    const imageInput = document.getElementById('product-image');
+    const categorySelect = document.getElementById('product-category');
+    const productList = document.getElementById('product-list');
+    const productIndexInput = document.getElementById('product-index');
 
-        // Atualiza a lista de produtos na tela
-        function renderProducts() {
-            productList.innerHTML = '';
-            if (products.length === 0) {
-                productList.innerHTML = '<p>Nenhum produto cadastrado.</p>';
-                return;
-            }
+    // Atualiza a lista de produtos na tela E SALVA no localStorage
+    function renderProducts() {
+        productList.innerHTML = '';
+        if (products.length === 0) {
+            productList.innerHTML = '<p>Nenhum produto cadastrado.</p>';
+        } else {
             products.forEach((product, index) => {
                 const div = document.createElement('div');
                 div.className = 'product-item';
@@ -77,65 +110,73 @@
                 productList.appendChild(div);
             });
         }
+        // ESTA É A MUDANÇA IMPORTANTE:
+        // Coloque o localStorage.setItem AQUI, depois do 'if/else',
+        // para que ele sempre seja executado após a lista ser renderizada,
+        // garantindo que o estado atual (vazio ou com itens) seja salvo.
+        localStorage.setItem('products', JSON.stringify(products)); // Converte o array para string JSON
+    }
 
-        // Limpa o formulário
-        function clearForm() {
-            productIndexInput.value = '';
-            nameInput.value = '';
-            priceInput.value = '';
-            imageInput.value = '';
-            categorySelect.value = '';
+    // Limpa o formulário
+    function clearForm() {
+        productIndexInput.value = '';
+        nameInput.value = '';
+        priceInput.value = '';
+        imageInput.value = '';
+        categorySelect.value = '';
+    }
+
+    // Preenche o formulário para edição
+    productList.addEventListener('click', (event) => {
+        if (event.target.classList.contains('edit-btn')) {
+            const index = event.target.dataset.index;
+            const product = products[index];
+            productIndexInput.value = index;
+            nameInput.value = product.name;
+            priceInput.value = product.price;
+            imageInput.value = product.image;
+            categorySelect.value = product.category;
+        } else if (event.target.classList.contains('delete-btn')) {
+            const index = event.target.dataset.index;
+            if (confirm('Deseja excluir este produto?')) {
+                products.splice(index, 1);
+                renderProducts(); // Isso já chamará o localStorage.setItem
+                clearForm();
+            }
+        }
+    });
+
+    // Salvar novo produto ou atualizar existente
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = nameInput.value.trim();
+        const price = parseFloat(priceInput.value);
+        const image = imageInput.value.trim();
+        const category = categorySelect.value;
+
+        if (!name || !price || !image || !category) {
+            alert('Preencha todos os campos!');
+            return;
         }
 
-        // Preenche o formulário para edição
-        productList.addEventListener('click', (event) => {
-            if (event.target.classList.contains('edit-btn')) {
-                const index = event.target.dataset.index;
-                const product = products[index];
-                productIndexInput.value = index;
-                nameInput.value = product.name;
-                priceInput.value = product.price;
-                imageInput.value = product.image;
-                categorySelect.value = product.category;
-            } else if (event.target.classList.contains('delete-btn')) {
-                const index = event.target.dataset.index;
-                if (confirm('Deseja excluir este produto?')) {
-                    products.splice(index, 1);
-                    renderProducts();
-                    clearForm();
-                }
-            }
-        });
+        const productData = { name, price, image, category };
 
-        // Salvar novo produto ou atualizar existente
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = nameInput.value.trim();
-            const price = parseFloat(priceInput.value);
-            const image = imageInput.value.trim();
-            const category = categorySelect.value;
+        const editIndex = productIndexInput.value;
+        if (editIndex) {
+            // Atualizar
+            products[editIndex] = productData;
+        } else {
+            // Adicionar novo
+            products.push(productData);
+        }
 
-            if (!name || !price || !image || !category) {
-                alert('Preencha todos os campos!');
-                return;
-            }
+        renderProducts(); // Isso já chamará o localStorage.setItem
+        clearForm();
+    });
 
-            const productData = { name, price, image, category };
-
-            const editIndex = productIndexInput.value;
-            if (editIndex) {
-                // Atualizar
-                products[editIndex] = productData;
-            } else {
-                // Adicionar novo
-                products.push(productData);
-            }
-
-            renderProducts();
-            clearForm();
-        });
-
-        renderProducts();
-    </script>
+    // Renderiza os produtos ao carregar a página (com os dados do localStorage, se existirem)
+    renderProducts();
+</script>
 </body>
+
 </html>
