@@ -8,7 +8,6 @@ body {
     line-height: 1.6;
 }
 
-
 .container {
     max-width: 1000px;
     margin: 0 auto;
@@ -21,7 +20,7 @@ header {
     color: white;
     padding: 40px 0;
     text-align: center;
-    position: relative; /* Para posicionar o ícone do carrinho */
+    /* Removido: position: relative; do header, pois o ícone do carrinho será fixo na viewport */
 }
 
 header h1 {
@@ -35,11 +34,11 @@ header p {
     margin-top: 10px;
 }
 
-/* Carrinho no Header */
+/* Carrinho no Header (agora fixo na tela) */
 .cart-icon {
-    position: absolute;
-    top: 25px;
-    right: 25px;
+    position: fixed; /* O botão do carrinho seguirá a rolagem */
+    top: 25px; /* Posição do topo da tela */
+    right: 25px; /* Posição da direita da tela */
     font-size: 1.8em;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.2);
@@ -49,6 +48,7 @@ header p {
     display: flex;
     align-items: center;
     gap: 8px;
+    z-index: 1002; /* Garante que ele fique acima de outros elementos, incluindo o modal */
 }
 
 .cart-icon:hover {
@@ -84,6 +84,7 @@ nav ul {
     margin: 0;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap; /* Para que os itens quebrem a linha em telas menores */
 }
 
 nav ul li {
@@ -138,6 +139,7 @@ hr {
     text-align: left;
     padding-bottom: 15px;
     transition: transform 0.2s ease-in-out;
+    position: relative; /* Para posicionar o botão de deletar */
 }
 
 .product-card:hover {
@@ -189,6 +191,34 @@ hr {
 .product-card .add-to-cart-btn:hover {
     background-color: #218838;
 }
+
+.product-card .delete-product-btn {
+    background-color: #dc3545; /* Vermelho */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8em;
+    display: block;
+    width: calc(100% - 30px);
+    margin: 10px 15px 0;
+    transition: background-color 0.3s ease;
+}
+
+.product-card .delete-product-btn:hover {
+    background-color: #c82333;
+}
+
+/* Loading message */
+.loading-message {
+    text-align: center;
+    grid-column: 1 / -1; /* Ocupa todas as colunas */
+    color: #666;
+    font-style: italic;
+    padding: 30px;
+}
+
 
 /* Category Filter */
 .category-filter {
@@ -333,7 +363,7 @@ footer {
 }
 
 
-/* Modal do Carrinho */
+/* Modal (geral para carrinho, adicionar produto, deletar) */
 .modal {
     display: none; /* Escondido por padrão */
     position: fixed; /* Fica por cima de tudo */
@@ -346,7 +376,7 @@ footer {
     background-color: rgba(0,0,0,0.4); /* Fundo escuro transparente */
     backdrop-filter: blur(5px); /* Efeito de desfoque */
     -webkit-backdrop-filter: blur(5px);
-    display: flex; /* Para centralizar o conteúdo */
+    /* REMOVIDO: display: flex; - Isso fazia o modal abrir automaticamente */
     align-items: center; /* Centraliza verticalmente */
     justify-content: center; /* Centraliza horizontalmente */
 }
@@ -396,6 +426,7 @@ footer {
     font-size: 2em;
 }
 
+/* Estilos do Carrinho */
 #cart-items {
     max-height: 40vh; /* Altura máxima para a lista de itens, com scroll */
     overflow-y: auto;
@@ -528,6 +559,146 @@ footer {
 }
 
 
+/* Estilos do Formulário de Adicionar Produto */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group textarea,
+.form-group select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    resize: vertical; /* Permite redimensionar verticalmente */
+    min-height: 80px;
+}
+
+.submit-btn {
+    background-color: #007bff; /* Azul */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos do Modal de Confirmação de Exclusão */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.delete-confirm-btn {
+    background-color: #dc3545; /* Vermelho */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.delete-confirm-btn:hover {
+    background-color: #c82333;
+}
+
+.cancel-btn {
+    background-color: #6c757d; /* Cinza */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Caixa de Mensagem Personalizada */
+.message-box {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    color: white;
+    font-weight: bold;
+    z-index: 2000; /* Acima de tudo */
+    text-align: center;
+    animation: slideIn 0.3s ease-out;
+}
+
+.message-box.info {
+    background-color: #17a2b8; /* Azul claro */
+}
+
+.message-box.success {
+    background-color: #28a745; /* Verde */
+}
+
+.message-box.error {
+    background-color: #dc3545; /* Vermelho */
+}
+
+.message-box.warning {
+    background-color: #ffc107; /* Amarelo */
+    color: #333; /* Texto escuro para contraste */
+}
+
+.message-box .close-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+}
+
+.message-box.warning .close-button {
+    color: #333; /* Texto escuro para contraste */
+}
+
+@keyframes slideIn {
+    from { top: 0px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+}
+
+
 /* Media Queries para responsividade */
 @media (max-width: 768px) {
     header h1 {
@@ -602,5 +773,12 @@ footer {
 
     .cart-item span {
         margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select,
+    .submit-btn {
+        width: 100%; /* Garante largura total em mobile */
     }
 }
