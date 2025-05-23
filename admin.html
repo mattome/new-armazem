@@ -1,182 +1,358 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Administração - Armazém do Sítio</title>
-    <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armazém do Sítio - Administração de Produtos</title>
+    <link rel="stylesheet" href="style.css"> <style>
+        /* Estilos específicos para admin.html (pode mover para style.css ou admin.css) */
         body {
             font-family: Arial, sans-serif;
-            max-width: 700px;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 900px;
             margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        label {
+        .admin-container h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+
+        /* Formulário de Produto */
+        .product-form {
+            background-color: #e8f5e9; /* Cor verde claro */
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #c8e6c9; /* Borda mais escura */
+        }
+
+        .product-form h2 {
+            margin-top: 0;
+            color: #2e7d32; /* Verde mais escuro */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
             display: block;
-            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
 
-        input,
-        select {
-            width: 100%;
-            padding: 6px;
-            margin-top: 4px;
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: calc(100% - 20px); /* Ajusta para padding */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
         }
 
-        button {
-            margin-top: 10px;
-            padding: 8px 12px;
+        .form-buttons {
+            text-align: right;
+            margin-top: 20px;
         }
 
+        .form-buttons button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-buttons .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .form-buttons .btn-save:hover {
+            background-color: #45a049;
+        }
+
+        .form-buttons .btn-cancel, .form-buttons .btn-clear {
+            background-color: #f44336;
+            color: white;
+        }
+        .form-buttons .btn-cancel:hover, .form-buttons .btn-clear:hover {
+            background-color: #da190b;
+        }
+        .form-buttons .btn-new {
+            background-color: #2196F3;
+            color: white;
+        }
+        .form-buttons .btn-new:hover {
+            background-color: #0b7dda;
+        }
+
+
+        /* Lista de Produtos */
         .product-list {
             margin-top: 30px;
         }
 
-        .product-item {
-            border-bottom: 1px solid #ccc;
-            padding: 10px 0;
+        .product-list h2 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
         }
 
-        .edit-btn {
-            margin-left: 10px;
+        .product-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .product-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+
+        .product-info {
+            flex-grow: 1;
+        }
+
+        .product-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .product-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .product-actions button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .product-actions .btn-edit {
+            background-color: #FFC107;
+            color: #333;
+        }
+
+        .product-actions .btn-edit:hover {
+            background-color: #ffb300;
+        }
+
+        .product-actions .btn-delete {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .product-actions .btn-delete:hover {
+            background-color: #da190b;
         }
     </style>
 </head>
-
 <body>
-    <h1>Administração - Produtos</h1>
+    <div class="admin-container">
+        <h1>Administração de Produtos</h1>
 
-    <form id="product-form">
-        <input type="hidden" id="product-index" value="" />
-        <label>
-            Nome do Produto:
-            <input type="text" id="product-name" required />
-        </label>
-        <label>
-            Preço:
-            <input type="number" id="product-price" step="0.01" min="0" required />
-        </label>
-        <label>
-            URL da Imagem:
-            <input type="text" id="product-image" placeholder="https://exemplo.com/imagem.jpg" required />
-        </label>
-        <label>
-            Categoria:
-            <select id="product-category" required>
-                <option value="">-- Selecione --</option>
-                <option value="hortifruti">Hortifrúti</option>
-                <option value="artesanais">Artesanais</option>
-                <option value="laticinios">Laticínios</option>
-                <option value="outros">Outros</option>
-            </select>
-        </label>
-        <button type="submit">Salvar Produto</button>
-    </form>
+        <div class="product-form">
+            <h2>Adicionar/Editar Produto</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId"> <div class="form-group">
+                    <label for="productName">Nome do Produto:</label>
+                    <input type="text" id="productName" required>
+                </div>
 
-    <div class="product-list" id="product-list"></div>
+                <div class="form-group">
+                    <label for="productPrice">Preço (R$):</label>
+                    <input type="number" id="productPrice" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">URL da Imagem:</label>
+                    <input type="text" id="productImage" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productCategory">Categoria:</label>
+                    <select id="productCategory" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="hortifruti">Hortifrúti</option>
+                        <option value="artesanais">Artesanais</option>
+                        <option value="laticinios">Laticínios</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-save" id="saveProductBtn">Salvar Produto</button>
+                    <button type="button" class="btn-new" id="newProductBtn">Novo Produto</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="product-list">
+            <h2>Produtos Atuais</h2>
+            <div id="productsDisplay">
+                <p>Nenhum produto cadastrado.</p>
+            </div>
+        </div>
+    </div>
 
     <script>
-    let products = [];
-    // Tenta carregar os produtos do localStorage ao iniciar
-    const storedProducts = localStorage.getItem('products');
-    if (storedProducts) {
-        products = JSON.parse(storedProducts); // Converte de string JSON para array JavaScript
-    }
+        let products = []; // Array para armazenar os produtos
 
-    const form = document.getElementById('product-form');
-    const nameInput = document.getElementById('product-name');
-    const priceInput = document.getElementById('product-price');
-    const imageInput = document.getElementById('product-image');
-    const categorySelect = document.getElementById('product-category');
-    const productList = document.getElementById('product-list');
-    const productIndexInput = document.getElementById('product-index');
+        // Referências aos elementos HTML
+        const productForm = document.getElementById('productForm');
+        const productIdInput = document.getElementById('productId');
+        const productNameInput = document.getElementById('productName');
+        const productPriceInput = document.getElementById('productPrice');
+        const productImageInput = document.getElementById('productImage');
+        const productCategorySelect = document.getElementById('productCategory');
+        const saveProductBtn = document.getElementById('saveProductBtn');
+        const newProductBtn = document.getElementById('newProductBtn');
+        const productsDisplay = document.getElementById('productsDisplay');
 
-    // Atualiza a lista de produtos na tela E SALVA no localStorage
-    function renderProducts() {
-        productList.innerHTML = '';
-        if (products.length === 0) {
-            productList.innerHTML = '<p>Nenhum produto cadastrado.</p>';
-        } else {
+        // Função para carregar produtos do localStorage
+        function loadProducts() {
+            const storedProducts = localStorage.getItem('products');
+            if (storedProducts) {
+                products = JSON.parse(storedProducts);
+            } else {
+                products = []; // Garante que é um array vazio se não houver nada
+            }
+            renderProducts();
+        }
+
+        // Função para salvar produtos no localStorage
+        function saveProducts() {
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        // Função para renderizar os produtos na tela de administração
+        function renderProducts() {
+            productsDisplay.innerHTML = ''; // Limpa a lista
+            if (products.length === 0) {
+                productsDisplay.innerHTML = '<p>Nenhum produto cadastrado ainda.</p>';
+                return;
+            }
+
             products.forEach((product, index) => {
-                const div = document.createElement('div');
-                div.className = 'product-item';
-                div.innerHTML = `
-                    <strong>${product.name}</strong> — R$ ${product.price.toFixed(2)}<br>
-                    Categoria: <em>${product.category}</em><br>
-                    <img src="${product.image}" alt="${product.name}" style="width:100px; margin-top:5px;" /><br>
-                    <button class="edit-btn" data-index="${index}">Editar</button>
-                    <button class="delete-btn" data-index="${index}">Excluir</button>
+                const productItem = document.createElement('div');
+                productItem.className = 'product-item';
+                productItem.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p>Preço: R$ ${product.price.toFixed(2)}</p>
+                        <p>Categoria: ${product.category}</p>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn-edit" data-index="${index}">Editar</button>
+                        <button class="btn-delete" data-index="${index}">Excluir</button>
+                    </div>
                 `;
-                productList.appendChild(div);
+                productsDisplay.appendChild(productItem);
             });
         }
-        // ESTA É A MUDANÇA IMPORTANTE:
-        // Coloque o localStorage.setItem AQUI, depois do 'if/else',
-        // para que ele sempre seja executado após a lista ser renderizada,
-        // garantindo que o estado atual (vazio ou com itens) seja salvo.
-        localStorage.setItem('products', JSON.stringify(products)); // Converte o array para string JSON
-    }
 
-    // Limpa o formulário
-    function clearForm() {
-        productIndexInput.value = '';
-        nameInput.value = '';
-        priceInput.value = '';
-        imageInput.value = '';
-        categorySelect.value = '';
-    }
+        // Função para resetar o formulário
+        function resetForm() {
+            productIdInput.value = '';
+            productNameInput.value = '';
+            productPriceInput.value = '';
+            productImageInput.value = '';
+            productCategorySelect.value = '';
+            saveProductBtn.textContent = 'Salvar Produto'; // Volta ao texto original
+        }
 
-    // Preenche o formulário para edição
-    productList.addEventListener('click', (event) => {
-        if (event.target.classList.contains('edit-btn')) {
-            const index = event.target.dataset.index;
-            const product = products[index];
-            productIndexInput.value = index;
-            nameInput.value = product.name;
-            priceInput.value = product.price;
-            imageInput.value = product.image;
-            categorySelect.value = product.category;
-        } else if (event.target.classList.contains('delete-btn')) {
-            const index = event.target.dataset.index;
-            if (confirm('Deseja excluir este produto?')) {
-                products.splice(index, 1);
-                renderProducts(); // Isso já chamará o localStorage.setItem
-                clearForm();
+        // Event Listener para o formulário de produto
+        productForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Impede o envio padrão do formulário
+
+            const id = productIdInput.value;
+            const name = productNameInput.value;
+            const price = parseFloat(productPriceInput.value);
+            const image = productImageInput.value;
+            const category = productCategorySelect.value;
+
+            if (id) {
+                // Editando produto existente
+                const productIndex = products.findIndex(p => p.name === id); // Usando o nome como "ID" temporário para edição
+                if (productIndex > -1) {
+                    products[productIndex] = { name, price, image, category };
+                }
+            } else {
+                // Adicionando novo produto
+                products.push({ name, price, image, category });
             }
-        }
-    });
 
-    // Salvar novo produto ou atualizar existente
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = nameInput.value.trim();
-        const price = parseFloat(priceInput.value);
-        const image = imageInput.value.trim();
-        const category = categorySelect.value;
+            saveProducts();
+            renderProducts();
+            resetForm(); // Limpa o formulário após salvar
+        });
 
-        if (!name || !price || !image || !category) {
-            alert('Preencha todos os campos!');
-            return;
-        }
+        // Event Listener para os botões de Editar/Excluir
+        productsDisplay.addEventListener('click', (e) => {
+            const target = e.target;
+            const index = target.dataset.index;
 
-        const productData = { name, price, image, category };
+            if (target.classList.contains('btn-edit')) {
+                const productToEdit = products[index];
+                productIdInput.value = productToEdit.name; // Usar o nome como "ID" para buscar na edição
+                productNameInput.value = productToEdit.name;
+                productPriceInput.value = productToEdit.price;
+                productImageInput.value = productToEdit.image;
+                productCategorySelect.value = productToEdit.category;
+                saveProductBtn.textContent = 'Atualizar Produto';
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Rola para o topo do formulário
+            } else if (target.classList.contains('btn-delete')) {
+                if (confirm(`Tem certeza que deseja excluir "${products[index].name}"?`)) {
+                    products.splice(index, 1); // Remove o item do array
+                    saveProducts();
+                    renderProducts();
+                }
+            }
+        });
 
-        const editIndex = productIndexInput.value;
-        if (editIndex) {
-            // Atualizar
-            products[editIndex] = productData;
-        } else {
-            // Adicionar novo
-            products.push(productData);
-        }
+        // Event Listener para o botão "Novo Produto"
+        newProductBtn.addEventListener('click', resetForm);
 
-        renderProducts(); // Isso já chamará o localStorage.setItem
-        clearForm();
-    });
-
-    // Renderiza os produtos ao carregar a página (com os dados do localStorage, se existirem)
-    renderProducts();
-</script>
+        // Inicialização: Carrega os produtos ao carregar a página de administração
+        loadProducts();
+    </script>
 </body>
-
 </html>
