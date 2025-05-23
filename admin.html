@@ -89,22 +89,6 @@
             background-color: #45a049;
         }
 
-        .form-buttons .btn-cancel, .form-buttons .btn-clear {
-            background-color: #f44336;
-            color: white;
-        }
-        .form-buttons .btn-cancel:hover, .form-buttons .btn-clear:hover {
-            background-color: #da190b;
-        }
-        .form-buttons .btn-new {
-            background-color: #2196F3;
-            color: white;
-        }
-        .form-buttons .btn-new:hover {
-            background-color: #0b7dda;
-        }
-
-
         /* Lista de Produtos */
         .product-list {
             margin-top: 30px;
@@ -219,7 +203,6 @@
 
                 <div class="form-buttons">
                     <button type="submit" class="btn-save" id="saveProductBtn">Salvar Produto</button>
-                    <button type="button" class="btn-new" id="newProductBtn">Novo Produto</button>
                 </div>
             </form>
         </div>
@@ -243,7 +226,7 @@
         const productImageInput = document.getElementById('productImage');
         const productCategorySelect = document.getElementById('productCategory');
         const saveProductBtn = document.getElementById('saveProductBtn');
-        const newProductBtn = document.getElementById('newProductBtn');
+        // const newProductBtn = document.getElementById('newProductBtn'); // REMOVIDO
         const productsDisplay = document.getElementById('productsDisplay');
 
         // Função para carregar produtos do localStorage
@@ -252,7 +235,7 @@
             if (storedProducts) {
                 products = JSON.parse(storedProducts);
             } else {
-                products = []; // Garante que é um array vazio se não houver nada
+                products = [];
             }
             renderProducts();
         }
@@ -291,7 +274,7 @@
 
         // Função para resetar o formulário
         function resetForm() {
-            productIdInput.value = '';
+            productIdInput.value = ''; // Limpa o ID para indicar que é um novo produto
             productNameInput.value = '';
             productPriceInput.value = '';
             productImageInput.value = '';
@@ -299,11 +282,11 @@
             saveProductBtn.textContent = 'Salvar Produto'; // Volta ao texto original
         }
 
-        // Event Listener para o formulário de produto
+        // Event Listener para o formulário de produto (Adicionar/Editar)
         productForm.addEventListener('submit', (e) => {
             e.preventDefault(); // Impede o envio padrão do formulário
 
-            const id = productIdInput.value;
+            const id = productIdInput.value; // Pega o "ID" (nome do produto) se estiver em modo de edição
             const name = productNameInput.value;
             const price = parseFloat(productPriceInput.value);
             const image = productImageInput.value;
@@ -311,48 +294,49 @@
 
             if (id) {
                 // Editando produto existente
-                const productIndex = products.findIndex(p => p.name === id); // Usando o nome como "ID" temporário para edição
+                // Encontra o índice do produto pelo nome (ID temporário)
+                const productIndex = products.findIndex(p => p.name === id);
                 if (productIndex > -1) {
                     products[productIndex] = { name, price, image, category };
                 }
             } else {
-                // Adicionando novo produto
+                // Adicionando novo produto (se o ID estiver vazio)
                 products.push({ name, price, image, category });
             }
 
             saveProducts();
             renderProducts();
-            resetForm(); // Limpa o formulário após salvar
+            resetForm(); // Limpa o formulário após salvar/atualizar
         });
 
-        // Event Listener para os botões de Editar/Excluir
+        // Event Listener para os botões de Editar/Excluir na lista
         productsDisplay.addEventListener('click', (e) => {
             const target = e.target;
             const index = target.dataset.index;
 
             if (target.classList.contains('btn-edit')) {
                 const productToEdit = products[index];
+                // Preenche o formulário com os dados do produto para edição
                 productIdInput.value = productToEdit.name; // Usar o nome como "ID" para buscar na edição
                 productNameInput.value = productToEdit.name;
                 productPriceInput.value = productToEdit.price;
                 productImageInput.value = productToEdit.image;
                 productCategorySelect.value = productToEdit.category;
-                saveProductBtn.textContent = 'Atualizar Produto';
+                saveProductBtn.textContent = 'Atualizar Produto'; // Altera o texto do botão
                 window.scrollTo({ top: 0, behavior: 'smooth' }); // Rola para o topo do formulário
             } else if (target.classList.contains('btn-delete')) {
                 if (confirm(`Tem certeza que deseja excluir "${products[index].name}"?`)) {
                     products.splice(index, 1); // Remove o item do array
                     saveProducts();
                     renderProducts();
+                    resetForm(); // Limpa o formulário caso o item deletado estivesse em edição
                 }
             }
         });
 
-        // Event Listener para o botão "Novo Produto"
-        newProductBtn.addEventListener('click', resetForm);
-
         // Inicialização: Carrega os produtos ao carregar a página de administração
         loadProducts();
+        resetForm(); // Garante que o formulário esteja limpo ao carregar a página
     </script>
 </body>
 </html>
