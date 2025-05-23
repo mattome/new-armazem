@@ -87,9 +87,9 @@
                     <li><i class="fas fa-phone"></i> Telefone: (XX) XXXX-XXXX</li>
                     <li><i class="fas fa-envelope"></i> Email: contato@armazemdositio.com.br</li>
                     <li><i class="fab fa-instagram"></i> Instagram: <a href="https://instagram.com/armazemdositio"
-                            target="_blank">@armazemdositio</a></li>
+                                target="_blank">@armazemdositio</a></li>
                     <li><i class="fab fa-whatsapp"></i> WhatsApp: <a href="https://wa.me/5511955305280"
-                            target="_blank">(11) 95530-5280</a></li>
+                                target="_blank">(11) 95530-5280</a></li>
                 </ul>
             </div>
         </section>
@@ -131,10 +131,31 @@
         let products = []; // Este array vai guardar os produtos carregados do localStorage
         let cart = []; // Este array vai guardar os itens no carrinho do usuário
 
+        // PRODUTOS INICIAIS (se o localStorage estiver vazio)
+        const initialProducts = [
+            { name: "Banana", price: 8.50, image: "https://cloudfront-us-east-1.images.arcpublishing.com/estadao/CU6HU7WMEVF2THSPFT7RBQXFWM.jpeg", category: "hortifruti" },
+            { name: "Batata inglesa", price: 6.99, image: "https://ceagesp.gov.br/wp-content/uploads/2016/10/batataportal-600x469.jpg", category: "hortifruti" },
+            { name: "Batata doce", price: 5.85, image: "https://safraviva.com.br/wp-content/uploads/como-plantar-batata-doce.jpg", category: "hortifruti" },
+            { name: "Tomate", price: 7.99, image: "https://www.yarabrasil.com.br/globalassets/tomates-saudaveis.webp", category: "hortifruti" },
+            { name: "Cebola", price: 3.20, image: "https://casadoprodutorrural.com.br/site/wp-content/uploads/2022/11/Foto-Artigo-Cebola-manejo-eficiente-favorece-a-produtividade-e-a-qualidade-da-hortalica.png", category: "hortifruti" },
+            { name: "Queijo Artesanal", price: 35.00, image: "https://cdn.shopify.com/s/files/1/0279/1195/9213/articles/como-fazer-queijo-caseiro.jpg?v=1646244122", category: "laticinios" },
+            { name: "Doce de leite caseiro (500g)", price: 37.90, image: "https://bhaz.com.br/wp-content/uploads/2022/03/Doce-de-Leite-Caseiro.jpg", category: "laticinios" },
+            { name: "Geleia de morango caseira (200g)", price: 21.00, image: "https://organicosinbox.com.br/wp-content/uploads/2022/02/geleia-morango-4.jpeg", category: "artesanais" },
+            { name: "Geleia de goiaba caseira (200g)", price: 16.55, image: "https://static.itdg.com.br/images/1200-675/f672a6f3d8761b8fc362ded579aab143/354792-original.jpg", category: "artesanais" },
+            { name: "Doce de abóbora caseiro (400g)", price: 22.50, image: "https://static.itdg.com.br/images/1200-675/1305d491c8bdafd5c2937f3e4172595b/348226-original.jpg", category: "artesanais" },
+            { name: "Ovos Caipiras (Duzia)", price: 12.00, image: "https://vivagreen.com.br/wp-content/uploads/2015/06/eggy01-e1433516970530.jpg", category: "outros" }
+        ];
+
         // 2. Carrega os produtos do localStorage ao iniciar
         const storedProducts = localStorage.getItem('products');
         if (storedProducts) {
             products = JSON.parse(storedProducts); // Converte de string JSON para array JavaScript
+        } else {
+            // Se não houver produtos no localStorage, usa os produtos iniciais
+            products = initialProducts;
+            // IMPORTANTE: Salvar esses produtos iniciais no localStorage para que apareçam na admin.html
+            // e sejam persistidos mesmo após recarregar a página.
+            localStorage.setItem('products', JSON.stringify(products));
         }
 
         // 3. Carrega o carrinho do localStorage ao iniciar
@@ -364,11 +385,9 @@
             });
         });
 
-        // 8. Event Listeners (parte relevante)
-
         // Atualiza o link do WhatsApp flutuante com o pedido atual
         whatsappFloat.addEventListener('click', (e) => {
-            e.preventDefault(); // <-- MOVA ESTA LINHA PARA AQUI
+            e.preventDefault(); // Impede o comportamento padrão do link
 
             if (cart.length > 0) {
                 checkout(); // Chama a função de checkout para gerar a mensagem e abrir o WhatsApp
@@ -378,7 +397,7 @@
         });
 
         // 9. Inicialização: Renderiza os produtos e atualiza o display do carrinho
-        renderProductsOnStorePage(); // Renderiza todos os produtos ao carregar a página
+        renderProductsOnStorePage('all'); // Garante que todos os produtos sejam exibidos inicialmente
         updateCartDisplay(); // Atualiza o carrinho ao carregar a página
     </script>
 </body>
